@@ -12,62 +12,82 @@ package com.ryan.test;
  */
 
 class Bank {
+
 	private int safemoney = 0;
 
-	synchronized public void deposit() {
+	synchronized public void deposit(int money) {
 		while (safemoney > 3000) {
 			System.out.println("媽媽看到餘額在" + safemoney + "以上，暫停匯款");
 			try {
 				wait();
+				System.out.println("媽媽被要求匯款");
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			safemoney += 2000;
-			System.out.println("媽媽存了2000，帳戶共有: " + safemoney);
-			notify();
 		}
+		safemoney += money;
+		System.out.println("媽媽存了2000，帳戶共有: " + safemoney);
+		notify();
 	}
 
-	synchronized public void pay() {
+	synchronized public void pay(int money) {
 
-		while (safemoney == 0) {
+		while (safemoney < money) {
 			System.out.println("熊大看到帳戶沒錢，暫停提款");
 			try {
 				wait();
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			if (safemoney >= 1000) {
-				safemoney -= 1000;
-				System.out.println("熊大領了1000，帳戶共有: " + safemoney);
-				if (safemoney <= 2000) {
-					System.out.println("熊大看到餘額在2000以下，要求匯款");
-				}
-				notify();
+
 			}
+		safemoney -= money;
+		System.out.println("熊大領了1000，帳戶共有: " + safemoney);
+		notify();
+		if (safemoney <= 2000) {
+			System.out.println("熊大看到餘額在2000以下，要求匯款");
+			
 		}
 	}
 }
 
-class Mom extends Thread{
+class Mom extends Thread {
 	Bank bank;
 
 	public Mom(Bank bank) {
-		super();
 		this.bank = bank;
 	}
-	
+
 	public void run() {
-		
+		for (int i = 1; i <= 10; i++) {
+			bank.deposit(2000);// 每次存2000
+		}
 	}
 }
 
+class Son extends Thread {
+	Bank bank;
+
+	public Son(Bank bank) {
+		this.bank = bank;
+	}
+
+	public void run() {
+		for (int i = 1; i <= 10; i++) {
+			bank.pay(1000);// 每次領1000
+		}
+	}
+}
 
 public class Homework9_2 {
 	public static void main(String[] args) {
+		Bank bank = new Bank();
+		Mom m1 = new Mom(bank);
+		Son s1 = new Son(bank);
+		Son s2 = new Son(bank);
+		m1.start();
+		s1.start();
+		s2.start();
 
 	}
 }
-

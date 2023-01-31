@@ -14,8 +14,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 
-import xxx3.Animal;
-import xxx3.Dog;
 
 public class Homework7 {
 	public static void main(String[] args) throws FileNotFoundException, Exception {
